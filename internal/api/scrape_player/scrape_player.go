@@ -1,14 +1,8 @@
-package main
+package scrape_player
 
-import (
-	"fmt"
+import "github.com/gocolly/colly"
 
-	"github.com/gocolly/colly"
-)
-
-func main() {
-	c := colly.NewCollector()
-
+func ScrapePlayer(c *colly.Collector, url string) []map[string]string {
 	cols := []string{}
 
 	yearlyStats := []map[string]string{}
@@ -22,15 +16,13 @@ func main() {
 		currentPos := len(yearlyStats) - 1
 		year := h.ChildText("th")
 
-		yearlyStats[currentPos]["Year"] = year
+		yearlyStats[currentPos][cols[0]] = year
 		h.ForEach("td", func(i int, h *colly.HTMLElement) {
 			yearlyStats[currentPos][statHeaders[i]] = h.Text
 		})
 	})
 
-	c.Visit("https://www.baseball-reference.com/players/w/willite01.shtml")
+	c.Visit(url)
 
-	for _, yearStats := range yearlyStats {
-		fmt.Println(yearStats)
-	}
+	return yearlyStats
 }
