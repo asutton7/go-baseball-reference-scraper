@@ -5,8 +5,6 @@ import (
 	"net/http/httptest"
 	"reflect"
 	"testing"
-
-	"github.com/gocolly/colly"
 )
 
 func TestScrapePlayer(t *testing.T) {
@@ -35,7 +33,7 @@ func TestScrapePlayer(t *testing.T) {
 		</body>
 		</html>`))
 	}))
-	received := ScrapePlayer(colly.NewCollector(), server.URL)
+	received := ScrapePlayer(server.URL)
 
 	expected := []map[string]string{{"year": "2022", "avg": ".250"}}
 

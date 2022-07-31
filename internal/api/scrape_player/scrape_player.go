@@ -2,7 +2,9 @@ package scrape_player
 
 import "github.com/gocolly/colly"
 
-func ScrapePlayer(c *colly.Collector, url string) []map[string]string {
+func ScrapePlayer(url string) []map[string]string {
+	c := colly.NewCollector()
+
 	cols := []string{}
 
 	yearlyStats := []map[string]string{}
