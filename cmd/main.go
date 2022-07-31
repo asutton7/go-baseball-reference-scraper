@@ -1,18 +1,11 @@
 package main
 
 import (
-	s "baseball_scraper/internal/api/scrape_player"
-	"fmt"
-
-	"github.com/gocolly/colly"
+	cs "baseball_scraper/server"
+	"net/http"
 )
 
 func main() {
-	c := colly.NewCollector()
-
-	yearlyStats := s.ScrapePlayer(c, "https://www.baseball-reference.com/players/w/willite01.shtml")
-
-	for _, yearStats := range yearlyStats {
-		fmt.Println(yearStats)
-	}
+	mux := cs.ConfigureServer()
+	http.ListenAndServe(":8080", mux)
 }
