@@ -1,32 +1,34 @@
+import { Box, Button, Input, TextField, Typography } from '@mui/material'
+import { Container } from '@mui/system'
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [stats, setStats] = useState()
+  const [url, setUrl] = useState<string>()
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUrl(event.target.value);
+  };
+
+  const fetchStats = async () => {
+    const res = await fetch('http://localhost:8080/player', {
+      method: "POST",
+      body: JSON.stringify({ url })
+    })
+    const jsonRes = await res.json()
+    setStats(jsonRes)
+  }
 
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
+    <Container>
+      <Typography variant="body1">Enter a player's baseball reference URL to get started</Typography>
+      <Box display="flex">
+        <TextField defaultValue={url} label="Baseball Reference URL" value={url} onChange={handleChange} />
+        <Button onClick={fetchStats}>Search</Button>
+      </Box>
+      {JSON.stringify(stats)}
+    </Container>
   )
 }
 
