@@ -8,11 +8,11 @@ func ScrapePlayer(url string) []map[string]string {
 	cols := []string{}
 
 	yearlyStats := []map[string]string{}
-	c.OnHTML("#batting_standard thead tr th", func(h *colly.HTMLElement) {
+	c.OnHTML("table:first-of-type thead tr th", func(h *colly.HTMLElement) {
 		cols = append(cols, h.Text)
 	})
 
-	c.OnHTML("#batting_standard tbody tr", func(h *colly.HTMLElement) {
+	c.OnHTML("table:first-of-type tbody tr", func(h *colly.HTMLElement) {
 		statHeaders := cols[1:]
 		yearlyStats = append(yearlyStats, make(map[string]string))
 		currentPos := len(yearlyStats) - 1
