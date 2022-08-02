@@ -1,10 +1,13 @@
 import { Box, Button, Input, TextField, Typography } from '@mui/material'
 import { Container } from '@mui/system'
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
+import { Line } from 'react-chartjs-2'
+import { Chart, CategoryScale, LinearScale, PointElement, LineElement } from "chart.js";
+
+Chart.register(CategoryScale, LinearScale, PointElement, LineElement);
 
 function App() {
-  const [stats, setStats] = useState()
+  const [stats, setStats] = useState<unknown[]>()
   const [url, setUrl] = useState<string>()
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,6 +23,20 @@ function App() {
     setStats(jsonRes)
   }
 
+  const mapData = () => {
+    return {
+      datasets: [{
+        data: stats.map((year) => ({
+          x: year.Year,
+          y: year.BA
+        })),
+        backgroundColor: 'black',
+        borderColor: 'lightblue',
+      }
+      ]
+    }
+  }
+
   return (
     <Container>
       <Typography variant="body1">Enter a player's baseball reference URL to get started</Typography>
@@ -27,7 +44,7 @@ function App() {
         <TextField defaultValue={url} label="Baseball Reference URL" value={url} onChange={handleChange} />
         <Button onClick={fetchStats}>Search</Button>
       </Box>
-      {JSON.stringify(stats)}
+      {stats && <Line id="line" data={mapData()} />}
     </Container>
   )
 }
