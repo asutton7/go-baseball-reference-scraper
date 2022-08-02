@@ -1,6 +1,7 @@
 package search
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -10,14 +11,18 @@ type PlayerProfile struct {
 	Link        string
 }
 
-func Search(lastName string, baseUrl string, scrapePlayerList func(url string) []PlayerProfile) []PlayerProfile {
+func Search(lastName string, baseUrl string, p PlayerListScraper) []PlayerProfile {
 	firstChar := strings.ToLower(string(lastName[0]))
 
-	// TODO: Cache scraper results
-	players := scrapePlayerList(baseUrl + "/" + firstChar)
+	cachedResult, found := p.Cache.Get(firstChar)
+	fmt.Print("Was cached?")
+	fmt.Print(found)
+	if !found {
+		cachedResult = p.ScrapeAndCache(baseUrl+"/"+firstChar, firstChar)
+	}
 
 	searchResults := []PlayerProfile{}
-	for _, player := range players {
+	for _, player := range cachedResult.([]PlayerProfile) {
 		if strings.Contains(strings.ToLower(player.Name), strings.ToLower(lastName)) {
 			searchResults = append(searchResults, player)
 		}

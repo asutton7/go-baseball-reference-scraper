@@ -1,9 +1,17 @@
 package search
 
-import "github.com/gocolly/colly"
+import (
+	"time"
 
-// TODO: Refactor to be a struct that maintains cache
-func ScrapePlayerList(url string) []PlayerProfile {
+	"github.com/gocolly/colly"
+	"github.com/patrickmn/go-cache"
+)
+
+type PlayerListScraper struct {
+	Cache cache.Cache
+}
+
+func (p PlayerListScraper) ScrapeAndCache(url string, cacheKey string) []PlayerProfile {
 	c := colly.NewCollector()
 
 	scraperResults := []PlayerProfile{}
@@ -16,5 +24,6 @@ func ScrapePlayerList(url string) []PlayerProfile {
 	})
 
 	c.Visit(url)
+	p.Cache.Add(cacheKey, scraperResults, 24*time.Hour)
 	return scraperResults
 }
