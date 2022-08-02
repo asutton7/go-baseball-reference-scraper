@@ -1,7 +1,6 @@
 package search
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -17,7 +16,6 @@ func Search(lastName string, baseUrl string, scrapePlayerList func(url string) [
 	// TODO: Cache scraper results
 	players := scrapePlayerList(baseUrl + "/" + firstChar)
 
-	fmt.Println(lastName)
 	searchResults := []PlayerProfile{}
 	for _, player := range players {
 		if strings.Contains(strings.ToLower(player.Name), strings.ToLower(lastName)) {
