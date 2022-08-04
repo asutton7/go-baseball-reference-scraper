@@ -1,17 +1,16 @@
 package search
 
 import (
-	"time"
-
 	"github.com/gocolly/colly"
-	"github.com/patrickmn/go-cache"
 )
 
-type PlayerListScraper struct {
-	Cache cache.Cache
+type PlayerProfile struct {
+	Name        string
+	YearsPlayed string
+	Link        string
 }
 
-func (p PlayerListScraper) ScrapeAndCache(url string, cacheKey string) []PlayerProfile {
+func Scrape(url string) []PlayerProfile {
 	c := colly.NewCollector()
 
 	scraperResults := []PlayerProfile{}
@@ -24,6 +23,5 @@ func (p PlayerListScraper) ScrapeAndCache(url string, cacheKey string) []PlayerP
 	})
 
 	c.Visit(url)
-	p.Cache.Add(cacheKey, scraperResults, 24*time.Hour)
 	return scraperResults
 }

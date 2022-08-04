@@ -1,10 +1,11 @@
 package configure_server
 
 import (
-	player "baseball_scraper/internal/api/scrape_player"
-	search "baseball_scraper/internal/api/search"
+	"baseball_scraper/internal/api/scrape_player"
+	"baseball_scraper/internal/api/search"
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/patrickmn/go-cache"
@@ -17,17 +18,17 @@ func ScrapePlayerHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	pathToPlayer := r.URL.Query()["path"][0]
 
-	stats := player.ScrapePlayer("https://www.baseball-reference.com/" + pathToPlayer)
+	stats := scrape_player.ScrapePlayer("https://www.baseball-reference.com/" + pathToPlayer)
 	json.NewEncoder(w).Encode(stats)
 }
 
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
-	playerListScraper := search.PlayerListScraper{Cache: *scrapedPlayerCache}
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 	lastName := r.URL.Query()["lastName"][0]
-	players := search.Search(lastName, "https://www.baseball-reference.com/players", playerListScraper)
-	json.NewEncoder(w).Encode(players)
+	firstChar := strings.ToLower(string(lastName[0]))
+	searchResults := search.HandleSearch(*scrapedPlayerCache, "https://www.baseball-reference.com/players/"+firstChar, lastName)
+	json.NewEncoder(w).Encode(searchResults)
 }
 
 func ConfigureServer() *http.ServeMux {

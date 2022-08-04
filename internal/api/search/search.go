@@ -1,32 +1,28 @@
 package search
 
 import (
-	"fmt"
 	"strings"
+
+	"github.com/patrickmn/go-cache"
 )
 
-type PlayerProfile struct {
-	Name        string
-	YearsPlayed string
-	Link        string
-}
-
-func Search(lastName string, baseUrl string, p PlayerListScraper) []PlayerProfile {
-	firstChar := strings.ToLower(string(lastName[0]))
-
-	cachedResult, found := p.Cache.Get(firstChar)
-	fmt.Print("Was cached?")
-	fmt.Print(found)
-	if !found {
-		cachedResult = p.ScrapeAndCache(baseUrl+"/"+firstChar, firstChar)
-	}
-
+func search(lastName string, collection []PlayerProfile) []PlayerProfile {
 	searchResults := []PlayerProfile{}
-	for _, player := range cachedResult.([]PlayerProfile) {
+	for _, player := range collection {
 		if strings.Contains(strings.ToLower(player.Name), strings.ToLower(lastName)) {
 			searchResults = append(searchResults, player)
 		}
 	}
 
 	return searchResults
+}
+
+func HandleSearch(c cache.Cache, url, lastName string) []PlayerProfile {
+	firstChar := strings.ToLower(string(lastName[0]))
+	scrapedResults, found := c.Get(firstChar)
+	if !found {
+		scrapedResults = Scrape(url)
+		c.Add(firstChar, scrapedResults, cache.DefaultExpiration)
+	}
+	return search(lastName, scrapedResults.([]PlayerProfile))
 }
