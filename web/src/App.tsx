@@ -15,7 +15,7 @@ function App() {
   };
 
   const fetchStats = async () => {
-    const res = await fetch('http://localhost:8080/player', {
+    const res = await fetch('http://localhost:8080/player?path=/players/w/willite01.shtml', {
       method: "POST",
       body: JSON.stringify({ url })
     })
@@ -24,16 +24,18 @@ function App() {
   }
 
   const mapData = () => {
-    return {
-      datasets: [{
-        data: stats.map((year) => ({
-          x: year.Year,
-          y: year.BA
-        })),
-        backgroundColor: 'black',
-        borderColor: 'lightblue',
+    if (stats) {
+      return {
+        datasets: [{
+          data: stats.map((year: Record<string, number>) => ({
+            x: year.Year,
+            y: year.BA
+          })),
+          backgroundColor: 'black',
+          borderColor: 'lightblue',
+        }
+        ]
       }
-      ]
     }
   }
 
